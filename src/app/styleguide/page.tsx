@@ -1,10 +1,11 @@
 "use client";
 
-import { Info, AlertTriangle, Package } from "lucide-react";
+import { useState } from "react";
+import { Info, AlertTriangle, Package, Bell, Trash2, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge, IndicatorBadge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Swatch } from "@/components/ui/swatch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -25,6 +27,20 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Pagination, PaginationContent, PaginationItem, PaginationLink,
+  PaginationPrevious, PaginationNext, PaginationEllipsis,
+} from "@/components/ui/pagination";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductCard, type Product } from "@/components/product-card";
 
 // Literal class strings so Tailwind's scanner emits each utility (no dynamic bg-${t}).
@@ -48,6 +64,13 @@ const sampleProduct: Product = {
   name: "Linen Trouser", price: "$98", was: "$130", tone: "oklch(0.9 0.01 120)", sale: true,
 };
 
+const swatchColors = [
+  { name: "Sand", value: "oklch(0.88 0.02 90)" },
+  { name: "Sage", value: "oklch(0.86 0.03 150)" },
+  { name: "Slate", value: "oklch(0.7 0.02 250)" },
+  { name: "Clay", value: "oklch(0.8 0.04 50)" },
+];
+
 function Section({ id, title, note, children }: {
   id: string; title: string; note?: string; children: React.ReactNode;
 }) {
@@ -63,16 +86,22 @@ function Section({ id, title, note, children }: {
 }
 
 export default function StyleGuide() {
+  const [swatch, setSwatch] = useState("Sand");
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-6 py-8">
-          <p className="text-sm text-muted-foreground">Atelier Design System</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight">Style Guide</h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            Every component rendered with the live app tokens. What you see here is what ships.
-            Change a token in globals.css and this whole page shifts with it.
-          </p>
+        <div className="mx-auto flex max-w-5xl items-start justify-between gap-4 px-6 py-8">
+          <div>
+            <p className="text-sm text-muted-foreground">Atelier Design System</p>
+            <h1 className="mt-1 text-3xl font-medium tracking-tight">Style Guide</h1>
+            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+              Every component rendered with the live app tokens. What you see here is what ships.
+              Flip the theme to inspect light and dark; change a token in globals.css and this
+              whole page shifts with it.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -165,6 +194,51 @@ export default function StyleGuide() {
               <div className="space-y-2">
                 <Label>Price range</Label>
                 <Slider defaultValue={[40]} max={100} />
+              </div>
+            </div>
+          </div>
+
+          {/* Swatch */}
+          <div className="mt-8 space-y-2">
+            <Label>Color swatch <span className="text-muted-foreground">· {swatch}</span></Label>
+            <div className="flex gap-2">
+              {swatchColors.map((c) => (
+                <Swatch
+                  key={c.name}
+                  color={c.value}
+                  label={c.name}
+                  selected={swatch === c.name}
+                  onClick={() => setSwatch(c.name)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* States */}
+          <div className="mt-8 space-y-3">
+            <p className="text-sm font-medium">States</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="disabled-input">Disabled</Label>
+                <Input id="disabled-input" placeholder="Disabled input" disabled />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="invalid-input">Invalid</Label>
+                <Input id="invalid-input" defaultValue="not-an-email" aria-invalid />
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 pt-1">
+              <div className="flex items-center gap-2">
+                <Checkbox id="cb-unchecked" />
+                <Label htmlFor="cb-unchecked" className="font-normal">Unchecked</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox id="cb-checked" defaultChecked />
+                <Label htmlFor="cb-checked" className="font-normal">Checked</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox id="cb-disabled" disabled />
+                <Label htmlFor="cb-disabled" className="font-normal opacity-50">Disabled</Label>
               </div>
             </div>
           </div>
@@ -288,6 +362,79 @@ export default function StyleGuide() {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+          </div>
+        </Section>
+
+        {/* Menus, overlays & pagination */}
+        <Section id="overlays" title="Menus, overlays & pagination" note="Dropdown, destructive confirm (AlertDialog, not Dialog), overlay count, and pagination.">
+          <div className="flex flex-wrap items-end gap-8">
+            {/* Indicator badge */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Indicator badge</p>
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+                  <Bell />
+                  <IndicatorBadge>3</IndicatorBadge>
+                </Button>
+                <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+                  <Bell />
+                  <IndicatorBadge>12</IndicatorBadge>
+                </Button>
+              </div>
+            </div>
+
+            {/* Dropdown */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Dropdown menu</p>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={<Button variant="outline" size="sm"><MoreHorizontal /> Actions</Button>}
+                />
+                <DropdownMenuContent align="start">
+                  <DropdownMenuLabel>Manage</DropdownMenuLabel>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                  <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Destructive confirm */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Destructive confirm</p>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  render={<Button variant="destructive" size="sm"><Trash2 /> Delete</Button>}
+                />
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this item?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action can&apos;t be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction variant="destructive">Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-2">
+            <p className="text-sm font-medium">Pagination</p>
+            <Pagination className="justify-start">
+              <PaginationContent>
+                <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
+                <PaginationItem><PaginationLink href="#">1</PaginationLink></PaginationItem>
+                <PaginationItem><PaginationLink href="#" isActive>2</PaginationLink></PaginationItem>
+                <PaginationItem><PaginationLink href="#">3</PaginationLink></PaginationItem>
+                <PaginationItem><PaginationEllipsis /></PaginationItem>
+                <PaginationItem><PaginationNext href="#" /></PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </Section>
 
