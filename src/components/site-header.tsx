@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu } from "lucide-react";
+import { Search, Menu, Heart } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CartButton } from "@/components/cart-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose,
 } from "@/components/ui/sheet";
@@ -34,9 +35,19 @@ export function SiteHeader({ cartCount = 2 }: { cartCount?: number }) {
         </div>
 
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label="Search">
+          <Button
+            variant="ghost" size="icon" aria-label="Search"
+            nativeButton={false} render={<Link href="/search" />}
+          >
             <Search />
           </Button>
+          <Button
+            variant="ghost" size="icon" aria-label="Wishlist" className="hidden sm:inline-flex"
+            nativeButton={false} render={<Link href="/wishlist" />}
+          >
+            <Heart />
+          </Button>
+          <ThemeToggle />
           <CartButton count={cartCount} />
 
           <Sheet>
