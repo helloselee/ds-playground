@@ -7,6 +7,12 @@
     "dev": "pnpm --filter showcase dev",
     "build": "pnpm --filter showcase build",
     "start": "pnpm --filter showcase start",
-    "lint": "pnpm --filter showcase lint"
+    "lint": "pnpm --filter showcase lint",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm --filter @xpndui/ui build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.1"
   }
 }
